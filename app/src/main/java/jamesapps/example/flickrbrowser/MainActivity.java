@@ -19,6 +19,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // tie this class with getRawData and then
+        GetRawData getRawData = new GetRawData(this);
+        getRawData.onPostExecute(
+                "https://www.flickr.com/services/feeds/photos_public.gne?tags=android,nougat&tagmode=any&format=json&nojsoncallback=1");   // see README
+
         Log.d(TAG, "onCreate: ended");
     }
 
@@ -43,5 +48,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onDownloadComplete(String data, DownloadStatus status){
+        if (status == DownloadStatus.OK){
+            Log.d(TAG, "onDownloadComplete: data is " + data);
+        } else {
+            Log.e(TAG, "onDownloadComplete failed with status " + status);
+        }
     }
 }

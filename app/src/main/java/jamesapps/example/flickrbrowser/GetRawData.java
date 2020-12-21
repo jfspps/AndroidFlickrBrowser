@@ -16,18 +16,29 @@ class GetRawData extends AsyncTask<String, Void, String> {
     private static final String TAG = "GetRawData";
 
     private DownloadStatus  mDownloadStatus;    // m for member variable (or use 'downloadStatus')
+    private final MainActivity mCallBack;
 
-    public GetRawData() {
+    public GetRawData(MainActivity callback) {
         mDownloadStatus = DownloadStatus.IDLE;
+
+        // link this class and objects with MainActivity class
+        mCallBack = callback;
     }
 
     @Override
     protected void onPostExecute(String s) {
         Log.d(TAG, "onPostExecute: parameter = " + s);
+
+        // if mCallback is linked to MainActivity, then let GetRawData object to call MainActivity methods (onDownloadComplete())
+        if (mCallBack != null){
+            mCallBack.onDownloadComplete(s, mDownloadStatus);
+        }
+        Log.d(TAG, "onPostExecute: ended");
     }
 
     @Override
     protected String doInBackground(String... strings) {
+        Log.d(TAG, "doInBackground: started");
         HttpURLConnection connection = null;
         BufferedReader reader = null;
         if (strings == null){
@@ -49,12 +60,16 @@ class GetRawData extends AsyncTask<String, Void, String> {
             StringBuilder result = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-            String line;
             // transfer reader to result; note that readLine() removes newline characters, hence the added append()
             // using null first is a convention not used in Java; however, it attempts to emphasise what could be null
+            String line;
             while (null != (line = reader.readLine())){
                 result.append(line).append("\n");
             }
+
+            // alternatively with a for loop
+            //   for(String line = reader.readLine(); line != null; line = reader.readLine()){ }
+
 
             mDownloadStatus = DownloadStatus.OK;
             return result.toString();
