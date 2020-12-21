@@ -23,7 +23,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+        Log.d(TAG, "onPostExecute: parameter = " + s);
     }
 
     @Override
@@ -40,7 +40,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
             URL url = new URL(strings[0]);
 
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod("GET");     // GET would be default anyway
             connection.connect();
 
             int response = connection.getResponseCode();
@@ -50,6 +50,8 @@ class GetRawData extends AsyncTask<String, Void, String> {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
             String line;
+            // transfer reader to result; note that readLine() removes newline characters, hence the added append()
+            // using null first is a convention not used in Java; however, it attempts to emphasise what could be null
             while (null != (line = reader.readLine())){
                 result.append(line).append("\n");
             }
