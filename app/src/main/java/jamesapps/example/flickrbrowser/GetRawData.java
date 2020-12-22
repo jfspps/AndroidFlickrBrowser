@@ -31,17 +31,27 @@ class GetRawData extends AsyncTask<String, Void, String> {
         mCallBack = callback;
     }
 
+    // run the method doInBackground on the same background thread as the calling function (i.e. GetFlickrJsonData's doInBackground())
+    void runInSameThread(String s) {
+        Log.d(TAG, "runInSameThread starts");
+
+        if(mCallBack != null) {
+            mCallBack.onDownloadComplete(doInBackground(s), mDownloadStatus);
+        }
+
+        Log.d(TAG, "runInSameThread ends");
+    }
+
     @Override
-    protected void onPostExecute(String s) {
+    protected void onPostExecute(String JSONstring) {
         // s should be the json feed, the returned String of doInBackground()
-        Log.d(TAG, "onPostExecute: parameter = " + s);
-        Log.d(TAG, "onPostExecute: status = " + mDownloadStatus);
+        Log.d(TAG, "GetRawData onPostExecute: JSONstring length = " + JSONstring.length());
 
         // if mCallback is linked to MainActivity, then let GetRawData object to call MainActivity methods (onDownloadComplete())
         if (mCallBack != null){
-            mCallBack.onDownloadComplete(s, mDownloadStatus);
+            mCallBack.onDownloadComplete(JSONstring, mDownloadStatus);
         }
-        Log.d(TAG, "onPostExecute: ended");
+        Log.d(TAG, "GetRawData onPostExecute: ended");
     }
 
     // pass an array of Strings (an example of a Varargs, variable-length arguments; note that it is assumed that the array of the same type)
@@ -50,6 +60,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
         Log.d(TAG, "doInBackground: started");
         HttpURLConnection connection = null;
         BufferedReader reader = null;
+
         if (strings == null){
             mDownloadStatus = DownloadStatus.NOT_INITIALISED;
             return null;
@@ -107,4 +118,6 @@ class GetRawData extends AsyncTask<String, Void, String> {
         mDownloadStatus = DownloadStatus.FAILED_OR_EMPTY;
         return null;
     }
+
+
 }

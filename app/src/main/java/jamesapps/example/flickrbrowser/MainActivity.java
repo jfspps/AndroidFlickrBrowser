@@ -32,12 +32,14 @@ public class MainActivity extends AppCompatActivity implements GetFlickrJsonData
         Log.d(TAG, "onCreate: ended");
     }
 
+    // note the Android lifecycle: onCreate then [onStart**, onResume* ... , onPause*, onStop (branch to onRestart**)] then onDestroy
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume: started");
         super.onResume();
-        GetFlickrJsonData getFlickrJsonData = new GetFlickrJsonData(this,"https://www.flickr.com/services/feeds/photos_public.gne", "en-us", true);
-        getFlickrJsonData.executeOnSameThread("android, nougat");
+        GetFlickrJsonData getFlickrJsonData = new GetFlickrJsonData(
+                this,"https://www.flickr.com/services/feeds/photos_public.gne", "en-us", true);
+        getFlickrJsonData.execute("android, nougat");
         Log.d(TAG, "onResume: ended");
     }
 
