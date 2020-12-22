@@ -16,7 +16,7 @@ Adding tags to narrow results returned is exemplified with:
 
 More info related to the execution of activities and associated callbacks are provided [here](https://developer.android.com/guide/components/activities/activity-lifecycle)
 
-In summary, an activity launch triggers a set of callbacks, in order, `onCreate()`, `onStart()`, `onResume()`*, ACTIVITY RUNNING, `onPause()`, `onStop()` and `onDestroy()`. Methods `onPause()` and `onResume()` are paired, as are `onStop()` and `onStart()`. When `onStop()` is called, another callback `onRestart()` is called before returning control to `onStart()`. The callback `onPause()` is called when another activity comes into focus.
+In summary, an activity launch triggers a set of callbacks, in order, `onCreate()`, `onStart()`, `onResume()`, ACTIVITY RUNNING, `onPause()`, `onStop()` and `onDestroy()`. Methods `onPause()` and `onResume()` are paired, as are `onStop()` and `onStart()`. When `onStop()` is called, another callback `onRestart()` is called before returning control to `onStart()`. The callback `onPause()` is called when another activity comes into focus.
 
 In FlickrBrowser, the lifecycle is exemplified by the following methods:
 
