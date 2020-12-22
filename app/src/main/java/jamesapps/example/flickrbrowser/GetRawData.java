@@ -16,9 +16,14 @@ class GetRawData extends AsyncTask<String, Void, String> {
     private static final String TAG = "GetRawData";
 
     private DownloadStatus  mDownloadStatus;    // m for member variable (or use 'downloadStatus')
-    private final MainActivity mCallBack;
+    private final OnDownloadComplete mCallBack;
 
-    public GetRawData(MainActivity callback) {
+    // use a nested interface to ensure getRawData objects can call a method onDownloadComplete
+    interface OnDownloadComplete {
+        void onDownloadComplete(String data, DownloadStatus status);
+    }
+
+    public GetRawData(OnDownloadComplete callback) {
         mDownloadStatus = DownloadStatus.IDLE;
 
         // link this class and objects with MainActivity class
@@ -27,7 +32,9 @@ class GetRawData extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
+        // s should be the json feed, the returned String of doInBackground()
         Log.d(TAG, "onPostExecute: parameter = " + s);
+        Log.d(TAG, "onPostExecute: status = " + mDownloadStatus);
 
         // if mCallback is linked to MainActivity, then let GetRawData object to call MainActivity methods (onDownloadComplete())
         if (mCallBack != null){
@@ -36,6 +43,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
         Log.d(TAG, "onPostExecute: ended");
     }
 
+    // pass an array of Strings (an example of a Varargs, variable-length arguments; note that it is assumed that the array of the same type)
     @Override
     protected String doInBackground(String... strings) {
         Log.d(TAG, "doInBackground: started");

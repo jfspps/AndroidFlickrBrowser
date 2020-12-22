@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GetRawData.OnDownloadComplete {
     private static final String TAG = "MainActivity";
 
     @Override
@@ -19,9 +19,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // tie this class with getRawData and then
+        // tie this class with getRawData and its interface (this also triggers the life cycle of GetRawData)
         GetRawData getRawData = new GetRawData(this);
-        getRawData.onPostExecute(
+
+        getRawData.execute(
                 "https://www.flickr.com/services/feeds/photos_public.gne?tags=android,nougat&tagmode=any&format=json&nojsoncallback=1");   // see README
 
         Log.d(TAG, "onCreate: ended");
