@@ -19,6 +19,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
     private final OnDownloadComplete mCallBack;
 
     // use a nested interface to ensure getRawData objects can call a method onDownloadComplete
+    // onDownloadComplete can be implemented by any class, not just MainActivity
     interface OnDownloadComplete {
         void onDownloadComplete(String data, DownloadStatus status);
     }

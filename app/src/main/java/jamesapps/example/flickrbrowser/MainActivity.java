@@ -19,9 +19,11 @@ public class MainActivity extends AppCompatActivity implements GetRawData.OnDown
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // tie this class with getRawData and its interface (this also triggers the life cycle of GetRawData)
+        // tie this class using getRawData (this also triggers the life cycle of GetRawData)
         GetRawData getRawData = new GetRawData(this);
 
+        // running execute starts the lifecycle of GetRawData (derived from ASyncTask) and calls onDownloadComplete()
+        // MainActivity calls execute() which in turn leads to a callback with onDownloadComplete() with GetRawData's data
         getRawData.execute(
                 "https://www.flickr.com/services/feeds/photos_public.gne?tags=android,nougat&tagmode=any&format=json&nojsoncallback=1");   // see README
 
