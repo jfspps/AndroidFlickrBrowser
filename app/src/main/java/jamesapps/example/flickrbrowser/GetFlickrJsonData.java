@@ -19,8 +19,9 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
     private final String mLanguage;
     private final boolean mMatchAll;
 
+    // established the link between this class and any other class that implements onDataAvailable()
+    // the link to the defining class is the first parameter of the constructor below
     private final OnDataAvailable mCallBack;
-
     interface OnDataAvailable{
         void onDataAvailable(List<Photo> data, DownloadStatus status);
     }
@@ -33,7 +34,8 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
         mCallBack = callBack;
     }
 
-    // this is called by GetRawData when the URL has been processed
+    // this is called by GetRawData when the URL has been processed (hence is a callback)
+    // this is only called after this class' doInBackground() has started
     @Override
     public void onDownloadComplete(String data, DownloadStatus status) {
         Log.d(TAG, "onDownloadComplete: started with status " + status);
