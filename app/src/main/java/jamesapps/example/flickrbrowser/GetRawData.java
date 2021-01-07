@@ -31,7 +31,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
         mCallBack = callback;
     }
 
-    // run the method doInBackground on the same background thread as the calling function (i.e. GetFlickrJsonData's doInBackground())
+    // run this class' doInBackground() on the same thread as the calling function (i.e. GetFlickrJsonData's doInBackground())
     void runInSameThread(String s) {
         Log.d(TAG, "runInSameThread starts");
 
@@ -80,7 +80,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
             StringBuilder result = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-            // transfer reader to result; note that readLine() removes newline characters, hence the added append()
+            // transfer reader to result; note that readLine() does not send newline characters, hence the added append("\n")
             // using null first is a convention not used in Java; however, it attempts to emphasise what could be null
             String line;
             while (null != (line = reader.readLine())){

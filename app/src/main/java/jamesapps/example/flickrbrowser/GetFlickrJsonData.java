@@ -34,7 +34,6 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
     }
 
     // this is called by GetRawData when the URL has been processed
-    // this method then
     @Override
     public void onDownloadComplete(String data, DownloadStatus status) {
         Log.d(TAG, "onDownloadComplete: started with status " + status);
@@ -85,19 +84,22 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
         Log.d(TAG, "onDownloadComplete: ended");
     }
 
+    // runs when GetFlickrJsonData is instantiated
     @Override
     protected List<Photo> doInBackground(String... params) {
         Log.d(TAG, "doInBackground: started");
         String desinationUri = createUri(params[0], mLanguage, mMatchAll);
         GetRawData getRawData = new GetRawData(this);
 
-        // this also runs getRawData's doInBackground() on the same thread as GetFlickrJsonData's doInBackground()
+        // runInSameThread() passes destinationUri to GetRawData.doInBackground() to build a JSONString,
+        // which is then passed to onDownloadComplete(), above, to build this class' mPhotoList, all on GetFlickrJsonData's thread
         getRawData.runInSameThread(desinationUri);
 
         Log.d(TAG, "doInBackground: ended");
         return mPhotoList;
     }
 
+    // helper to doInBackground()
     private String createUri(String searchCriteria, String language, boolean matchAll) {
         Log.d(TAG, "createUri: started");
 
@@ -111,6 +113,7 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
                 .build().toString();
     }
 
+    //runs after doInBackground, passing mPhotoList to MainActivity
     @Override
     protected void onPostExecute(List<Photo> photos) {
         Log.d(TAG, "onPostExecute: started");
