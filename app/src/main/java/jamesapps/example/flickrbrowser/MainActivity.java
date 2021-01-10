@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements GetFlickrJsonData
     }
 
     @Override
-    public void onItem(View view, int position) {
+    public void onItemClick(View view, int position) {
         Log.d(TAG, "onItem: started");
         Toast.makeText(MainActivity.this, "Normal tap at " + position, Toast.LENGTH_SHORT).show();
     }

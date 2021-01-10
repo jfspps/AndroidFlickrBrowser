@@ -17,7 +17,7 @@ class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchListener {
 
     // these will form callbacks in MainActivity
     interface OnRecycleClickListener {
-        void onItem(View view, int position);
+        void onItemClick(View view, int position);
         void onItemLongClick(View view, int position);
     }
 
@@ -26,18 +26,38 @@ class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchListener {
 
     public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnRecycleClickListener listener) {
         mListener = listener;
+
+        // a GestureDetector determines what sort of interaction was applied and then call other methods based on the type of gesture
         mGestureDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener(){
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-                return super.onSingleTapUp(e);
+                Log.d(TAG, "onSingleTapUp: started");
+
+                //get the View (ConstrainedView, TextView, etc.) and store in childView (we can now respond based on View type)
+                View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                if (childView != null && mListener != null){
+                    Log.d(TAG, "onSingleTapUp: calling listener.onItemClick");
+                    mListener.onItemClick(childView, recyclerView.getChildAdapterPosition(childView));
+                }
+
+                // declare that the onSingleTap event has been triggered
+                // this means that other singleTap events cannot be triggered and run other methods
+                // to enable more single taps before the finger is released, return false
+                return true;
             }
 
+            // don't return anything here, possibly (?) because there are other events that could
+            // be triggered after a long press, e.g. scrolling
             @Override
             public void onLongPress(MotionEvent e) {
-                super.onLongPress(e);
+                Log.d(TAG, "onLongPress: started");
+                View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                if (childView != null && mListener != null){
+                    Log.d(TAG, "onLongPress: calling listener.onItemLongClick");
+                    mListener.onItemLongClick(childView, recyclerView.getChildAdapterPosition(childView));
+                }
             }
         });
-
     }
 
     @Override
@@ -45,7 +65,7 @@ class RecyclerItemClickListener extends RecyclerView.SimpleOnItemTouchListener {
         Log.d(TAG, "onInterceptTouchEvent: touch event received");
         if (mGestureDetector != null){
             boolean result = mGestureDetector.onTouchEvent(e);
-            Log.d(TAG, "onInterceptTouchEvent: returned" + result);
+            Log.d(TAG, "onInterceptTouchEvent: returned " + result);
             return result;
         } else {
             Log.d(TAG, "onInterceptTouchEvent: returned false");
