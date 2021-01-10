@@ -2,12 +2,16 @@ package jamesapps.example.flickrbrowser;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -17,8 +21,53 @@ class FlickrRecyclerViewAdapter extends RecyclerView.Adapter<FlickrRecyclerViewA
     private Context mContext;
 
     public FlickrRecyclerViewAdapter(Context context, List<Photo> photoList) {
-        mPhotoList = photoList;
         mContext = context;
+        mPhotoList = photoList;
+    }
+
+    // create a new ViewHolder in preparation for the LayoutInflater
+    @NonNull
+    @Override
+    public FlickrImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: new view requested");
+        // do not add to the parent layout, hence pass false
+        // (passing null as a second parameter signifies the parent is unknown, preventing LayoutInflater from knowing the parent styling)
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.browse, parent, false);
+        return new FlickrImageViewHolder(view);
+    }
+
+    // use Picasso (image download and caching library)
+    // used by the layout manager to add data to an existing row
+    @Override
+    public void onBindViewHolder(@NonNull FlickrImageViewHolder holder, int position) {
+        Photo photoItem = mPhotoList.get(position);
+
+        Log.d(TAG, "onBindViewHolder: " + photoItem.getTitle() + " : " + position);
+
+        //Picasso is a singleton; load the image, set errors if necessary, the placeholder and then insert
+        Picasso.get().load(photoItem.getImage())
+                .error(R.drawable.placeholder)
+                .placeholder(R.drawable.placeholder)
+                .into(holder.thumbnail);
+
+        holder.title.setText(photoItem.getTitle());
+    }
+
+    @Override
+    public int getItemCount() {
+        Log.d(TAG, "getItemCount: called");
+        return ((mPhotoList != null) && (mPhotoList.size() != 0) ? mPhotoList.size() : 0);
+    }
+
+    void loadNewData(List<Photo> photos){
+        mPhotoList = photos;
+
+        // inform the observers to be prepared for new changes
+        notifyDataSetChanged();
+    }
+
+    public Photo getPhoto(int position){
+        return ((mPhotoList != null) && (mPhotoList.size() != 0) ? mPhotoList.get(position) : null);
     }
 
     // behaves like all other top-level classes
@@ -32,7 +81,7 @@ class FlickrRecyclerViewAdapter extends RecyclerView.Adapter<FlickrRecyclerViewA
             super(itemView);
             Log.d(TAG, "FlickrImageViewHolder: started");
             this.thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
-            this.title = (TextView) itemView.findViewById(R.id.title);
+            this.title = (TextView) itemView.findViewById(R.id.imageTitle);
         }
     }
 }

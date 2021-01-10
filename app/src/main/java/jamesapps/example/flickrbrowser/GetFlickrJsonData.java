@@ -15,9 +15,10 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
     private static final String TAG = "GetFlickrJsonData";
 
     private List<Photo> mPhotoList = null;
-    private final String mBaseURL;
-    private final String mLanguage;
-    private final boolean mMatchAll;
+    private String mBaseURL;
+    private String mLanguage;
+    private boolean mMatchAll;
+    private boolean runningOnSameThread = false;
 
     // established the link between this class and any other class that implements onDataAvailable()
     // the link to the defining class is the first parameter of the constructor below
@@ -32,6 +33,58 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
         mLanguage = language;
         mMatchAll = matchAll;
         mCallBack = callBack;
+    }
+
+    void executeOnSameThread(String searchCriteria) {
+        Log.d(TAG, "executeOnSameThread starts");
+        runningOnSameThread = true;
+        String destinationUri = createUri(searchCriteria, mLanguage, mMatchAll);
+
+        GetRawData getRawData = new GetRawData(this);
+        getRawData.execute(destinationUri);
+        Log.d(TAG, "executeOnSameThread ends");
+    }
+
+    //runs after doInBackground, passing mPhotoList to MainActivity
+    @Override
+    protected void onPostExecute(List<Photo> photos) {
+        Log.d(TAG, "onPostExecute: started");
+
+        if (mCallBack != null){
+            Log.d(TAG, "onPostExecute: mCallback from GetFlickrJsonData");
+            mCallBack.onDataAvailable(mPhotoList, DownloadStatus.OK);
+        }
+        Log.d(TAG, "onPostExecute: finished");
+    }
+
+
+    // runs when GetFlickrJsonData is instantiated
+    @Override
+    protected List<Photo> doInBackground(String... params) {
+        Log.d(TAG, "doInBackground: started");
+        String desinationUri = createUri(params[0], mLanguage, mMatchAll);
+        GetRawData getRawData = new GetRawData(this);
+
+        // runInSameThread() passes destinationUri to GetRawData.doInBackground() to build a JSONString,
+        // which is then passed to onDownloadComplete(), above, to build this class' mPhotoList, all on GetFlickrJsonData's thread
+        getRawData.runInSameThread(desinationUri);
+
+        Log.d(TAG, "doInBackground: ended");
+        return mPhotoList;
+    }
+
+    // helper to doInBackground()
+    private String createUri(String searchCriteria, String language, boolean matchAll) {
+        Log.d(TAG, "createUri: started");
+
+        // see JSON format for more properties
+        return Uri.parse(mBaseURL).buildUpon()
+                .appendQueryParameter("tags",searchCriteria)
+                .appendQueryParameter("tagMode", matchAll ? "ALL" : "ANY")
+                .appendQueryParameter("lang", language)
+                .appendQueryParameter("format", "json")
+                .appendQueryParameter("nojsoncallback", "1")
+                .build().toString();
     }
 
     // this is called by GetRawData when the URL has been processed (hence is a callback)
@@ -77,53 +130,12 @@ class GetFlickrJsonData extends AsyncTask<String, Void, List<Photo>> implements 
             }
         }
 
-        if (mCallBack != null){
+        if (runningOnSameThread && mCallBack != null){
             Log.d(TAG, "onDownloadComplete: mCallback from GetFlickrJsonData");
             // send callback if all done (update the caller of GetFlickrJsonData)
             mCallBack.onDataAvailable(mPhotoList, status);
         }
 
         Log.d(TAG, "onDownloadComplete: ended");
-    }
-
-    // runs when GetFlickrJsonData is instantiated
-    @Override
-    protected List<Photo> doInBackground(String... params) {
-        Log.d(TAG, "doInBackground: started");
-        String desinationUri = createUri(params[0], mLanguage, mMatchAll);
-        GetRawData getRawData = new GetRawData(this);
-
-        // runInSameThread() passes destinationUri to GetRawData.doInBackground() to build a JSONString,
-        // which is then passed to onDownloadComplete(), above, to build this class' mPhotoList, all on GetFlickrJsonData's thread
-        getRawData.runInSameThread(desinationUri);
-
-        Log.d(TAG, "doInBackground: ended");
-        return mPhotoList;
-    }
-
-    // helper to doInBackground()
-    private String createUri(String searchCriteria, String language, boolean matchAll) {
-        Log.d(TAG, "createUri: started");
-
-        // see JSON format for more properties
-        return Uri.parse(mBaseURL).buildUpon()
-                .appendQueryParameter("tags",searchCriteria)
-                .appendQueryParameter("tagMode", matchAll ? "ALL" : "ANY")
-                .appendQueryParameter("lang", language)
-                .appendQueryParameter("format", "json")
-                .appendQueryParameter("nojsoncallback", "1")
-                .build().toString();
-    }
-
-    //runs after doInBackground, passing mPhotoList to MainActivity
-    @Override
-    protected void onPostExecute(List<Photo> photos) {
-        Log.d(TAG, "onPostExecute: started");
-
-        if (mCallBack != null){
-            Log.d(TAG, "onPostExecute: mCallback from GetFlickrJsonData");
-            mCallBack.onDataAvailable(mPhotoList, DownloadStatus.OK);
-        }
-        Log.d(TAG, "onPostExecute: finished");
     }
 }
