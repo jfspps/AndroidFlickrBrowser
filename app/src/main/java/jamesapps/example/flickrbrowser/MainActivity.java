@@ -88,9 +88,12 @@ public class MainActivity extends BaseActivity implements GetFlickrJsonData.OnDa
     @Override
     public void onItemClick(View view, int position) {
         Log.d(TAG, "onItem: started");
+
+        // generate a pop-up (a toast) when tapped
         Toast.makeText(MainActivity.this, "Normal tap at " + position, Toast.LENGTH_SHORT).show();
     }
 
+    // with long click, this starts the PhotoDetailActivity to display a single photo
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: started");
@@ -98,7 +101,8 @@ public class MainActivity extends BaseActivity implements GetFlickrJsonData.OnDa
         // intents are operations to be performed
         Intent intent = new Intent(this, PhotoDetailActivity.class);
 
-        // add data to intent, to link the key with the selected photo; the key can be used to retrieve the photo later
+        // add data to intent, to link the key with the selected photo
+        // the key can be used to retrieve the photo later (see PhotoDetailActivity)
         // the data passed must be serialisable
         intent.putExtra(PHOTO_TRANSFER, mFlickrRecyclerViewAdapter.getPhoto(position));
         startActivity(intent);

@@ -15,7 +15,9 @@ public class BaseActivity extends AppCompatActivity {
     void activateToolbar(boolean enableHome){
         Log.d(TAG, "activateToolbar: started");
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
+
+        // build an actionBar if it doesn't exist
+        if (actionBar == null){
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
             if (toolbar != null){
@@ -24,6 +26,7 @@ public class BaseActivity extends AppCompatActivity {
             }
         }
 
+        // if there is an actionBar, show the Home icon based on enableHome parameter
         if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(enableHome);
         }

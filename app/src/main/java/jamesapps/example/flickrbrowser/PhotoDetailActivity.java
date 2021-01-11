@@ -1,6 +1,11 @@
 package jamesapps.example.flickrbrowser;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 // Displays a single photo image
 public class PhotoDetailActivity extends BaseActivity {
@@ -11,5 +16,26 @@ public class PhotoDetailActivity extends BaseActivity {
         setContentView(R.layout.activity_photo_detail);
 
         activateToolbar(true);
+
+        Intent intent = getIntent();
+
+        // use the key to retrieve the serialised Photo
+        Photo photo = (Photo) intent.getSerializableExtra(PHOTO_TRANSFER);
+        if (photo != null){
+            TextView photoTitle = (TextView) findViewById(R.id.photo_title);
+            photoTitle.setText("Title: " + photo.getTitle());
+
+            TextView photoTags = (TextView) findViewById(R.id.photo_tags);
+            photoTags.setText("Tags: " + photo.getTags());
+
+            TextView photoAuthor = (TextView) findViewById(R.id.photo_author);
+            photoAuthor.setText("Author: " + photo.getAuthor());
+
+            ImageView photoImage = (ImageView) findViewById(R.id.photo_image);
+            Picasso.get().load(photo.getLink())
+                    .error(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder)
+                    .into(photoImage);
+        }
     }
 }

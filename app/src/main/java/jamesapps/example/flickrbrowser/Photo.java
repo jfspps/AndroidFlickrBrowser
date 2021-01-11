@@ -6,6 +6,11 @@ import java.io.Serializable;
 
 // enable Photo to be converted to/from a bytestream
 class Photo implements Serializable {
+
+    // ensure that changes to the JVM (or related) do not affect the deserialisation of Photos
+    // (this would be generated automatically otherwise)
+    private static final Long serialVersionUID = 1L;
+
     private String mTitle;
     private String mAuthor;
     private String mAuthorId;
