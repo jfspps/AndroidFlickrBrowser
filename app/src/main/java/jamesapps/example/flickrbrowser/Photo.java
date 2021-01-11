@@ -2,7 +2,10 @@ package jamesapps.example.flickrbrowser;
 
 import androidx.annotation.NonNull;
 
-class Photo {
+import java.io.Serializable;
+
+// enable Photo to be converted to/from a bytestream
+class Photo implements Serializable {
     private String mTitle;
     private String mAuthor;
     private String mAuthorId;
@@ -43,6 +46,7 @@ class Photo {
         return mImage;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Photo{" +

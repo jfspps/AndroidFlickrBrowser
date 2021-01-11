@@ -1,5 +1,6 @@
 package jamesapps.example.flickrbrowser;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -7,15 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements GetFlickrJsonData.OnDataAvailable,
+public class MainActivity extends BaseActivity implements GetFlickrJsonData.OnDataAvailable,
         RecyclerItemClickListener.OnRecycleClickListener {
     private static final String TAG = "MainActivity";
     private FlickrRecyclerViewAdapter mFlickrRecyclerViewAdapter;
@@ -25,24 +24,17 @@ public class MainActivity extends AppCompatActivity implements GetFlickrJsonData
         Log.d(TAG, "onCreate: started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        // pass false since the Home button is not required
+        activateToolbar(false);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, this));
 
-        mFlickrRecyclerViewAdapter = new FlickrRecyclerViewAdapter(this, new ArrayList<Photo>());
+        mFlickrRecyclerViewAdapter = new FlickrRecyclerViewAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(mFlickrRecyclerViewAdapter);
-
-//        // tie this class using getRawData (this also triggers the life cycle of GetRawData)
-//        GetRawData getRawData = new GetRawData(this);
-//
-//        // running execute starts the lifecycle of GetRawData (derived from ASyncTask) and calls onDownloadComplete()
-//        // MainActivity calls execute() which in turn leads to a callback with onDownloadComplete() with GetRawData's data
-//        getRawData.execute(
-//                "https://www.flickr.com/services/feeds/photos_public.gne?tags=android,nougat&tagmode=any&format=json&nojsoncallback=1");   // see README
 
         Log.d(TAG, "onCreate: ended");
     }
@@ -102,6 +94,13 @@ public class MainActivity extends AppCompatActivity implements GetFlickrJsonData
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "onItemLongClick: started");
-        Toast.makeText(MainActivity.this, "Long tap at " + position, Toast.LENGTH_SHORT).show();
+
+        // intents are operations to be performed
+        Intent intent = new Intent(this, PhotoDetailActivity.class);
+
+        // add data to intent, to link the key with the selected photo; the key can be used to retrieve the photo later
+        // the data passed must be serialisable
+        intent.putExtra(PHOTO_TRANSFER, mFlickrRecyclerViewAdapter.getPhoto(position));
+        startActivity(intent);
     }
 }
