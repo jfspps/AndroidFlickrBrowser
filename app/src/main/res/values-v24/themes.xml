@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    needed to colorise the background of the card in Android v24 and above (settings *outside*
+of the styles tag, below, in the default themes.xml carry across-->
+    <style name="Theme.FlickrBrowser.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:colorBackgroundFloating">@color/primary</item>
+    </style>
+</resources>
