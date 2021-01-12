@@ -40,23 +40,32 @@ class FlickrRecyclerViewAdapter extends RecyclerView.Adapter<FlickrRecyclerViewA
     // used by the layout manager to add data to an existing row
     @Override
     public void onBindViewHolder(@NonNull FlickrImageViewHolder holder, int position) {
-        Photo photoItem = mPhotoList.get(position);
+        if ((mPhotoList == null) || (mPhotoList.size() == 0)){
+            // nothing found, inform the user
+            holder.thumbnail.setImageResource(R.drawable.placeholder);
+            holder.title.setText(R.string.empty_photo_list);
+        } else {
+            // photos found, build the list
+            Photo photoItem = mPhotoList.get(position);
 
-        Log.d(TAG, "onBindViewHolder: " + photoItem.getTitle() + " : " + position);
+            Log.d(TAG, "onBindViewHolder: " + photoItem.getTitle() + " : " + position);
 
-        //Picasso is a singleton; load the image, set errors if necessary, the placeholder and then insert
-        Picasso.get().load(photoItem.getImage())
-                .error(R.drawable.placeholder)
-                .placeholder(R.drawable.placeholder)
-                .into(holder.thumbnail);
+            //Picasso is a singleton; load the image, set errors if necessary, the placeholder and then insert
+            Picasso.get().load(photoItem.getImage())
+                    .error(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder)
+                    .into(holder.thumbnail);
 
-        holder.title.setText(photoItem.getTitle());
+            holder.title.setText(photoItem.getTitle());
+        }
     }
 
     @Override
     public int getItemCount() {
 //        Log.d(TAG, "getItemCount: called");
-        return ((mPhotoList != null) && (mPhotoList.size() != 0) ? mPhotoList.size() : 0);
+
+        // minor lie, add one card with the 'not found' feedback!
+        return ((mPhotoList != null) && (mPhotoList.size() != 0) ? mPhotoList.size() : 1);
     }
 
     void loadNewData(List<Photo> photos){
