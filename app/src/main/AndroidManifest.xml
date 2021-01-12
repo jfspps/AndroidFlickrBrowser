@@ -21,7 +21,7 @@
                 android:value="jamesapps.example.flickrbrowser.MainActivity" />
         </activity>
 
-        <!--            set the parent activity to SearchActivity (home button points to MainActivity-->
+        <!--            set the parent activity to SearchActivity (home button points to MainActivity)-->
         <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search"
@@ -30,6 +30,11 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="jamesapps.example.flickrbrowser.MainActivity" />
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
