@@ -1,7 +1,9 @@
 package jamesapps.example.flickrbrowser;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,9 +46,19 @@ public class MainActivity extends BaseActivity implements GetFlickrJsonData.OnDa
     protected void onResume() {
         Log.d(TAG, "onResume: started");
         super.onResume();
-        GetFlickrJsonData getFlickrJsonData = new GetFlickrJsonData(
-                this,"https://www.flickr.com/services/feeds/photos_public.gne", "en-us", true);
-        getFlickrJsonData.execute("android,nougat");
+
+        // retrieve any query results in a SharedPreferences object with the appropriate key
+        // (this is saved when the app terminates and is presented again on restart)
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        // if nothing found (no query made) then return an empty string ""
+        String queryResult = sharedPreferences.getString(FLICKR_QUERY, "");
+
+        if (queryResult.length() > 0){
+            GetFlickrJsonData getFlickrJsonData = new GetFlickrJsonData(
+                    this,"https://www.flickr.com/services/feeds/photos_public.gne", "en-us", true);
+            getFlickrJsonData.execute(queryResult);
+        }
+
         Log.d(TAG, "onResume: ended");
     }
 
